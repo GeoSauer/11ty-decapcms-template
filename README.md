@@ -50,6 +50,7 @@
         - <a href="#indexhtml">index.html</a>
         - <a href="#robotshtml">robots.html</a>
         - <a href="#sitemaphtml">sitemap.html</a>
+- <a href="#handoff-checklist">Handoff Checklist</a>
 - <a href="#deployment">Deployment</a>
 
 <a name="overview"></a>
@@ -104,6 +105,17 @@ _Not required for light-medium kit usage, but helpful if you want to customise t
 8.  Modify the website files (use `./src`, NOT `./public`) as needed. Use the template file in `content/pages/_template.txt` to get started, or modify the existing pages.
 9.  Deploy using your preferred hosting provider.
 
+### First 10 Minutes (Recommended)
+
+Use this quick sequence when starting a fresh client project:
+
+1. Run `npm start`.
+2. Confirm site output at `http://localhost:8080/`.
+3. Confirm CMS loads at `http://localhost:8080/admin/`.
+4. In CMS, edit one `Site Content` field and publish.
+5. Re-open the related page in the browser and verify the content update.
+6. Run `npm run build` before first deploy to confirm production build output is clean.
+
 <a name="customization-scripts"></a>
 
 ## Customization Scripts
@@ -135,7 +147,7 @@ npm run create-page -- "About, Services, Contact"
 For each name provided, the script will:
 
 - Create `src/content/pages/{slug}.html` pre-filled with `_template.txt`
-- Create `src/assets/scss/{slug}.scss` ready for your page-specific styles
+- Create `src/assets/sass/{slug}.scss` ready for your page-specific styles
 - Set the page title to `Page Name | Client | City, State` automatically using data from `_data/client.js`
 - Set the permalink to `/{slug}/`
 
@@ -156,7 +168,12 @@ This documentation will explain all the files and directories in the starter kit
 │   └── remove-demo.js
 ├── src/
 │   ├── _data/
-│   │   └── client.js
+│   │   ├── about.json
+│   │   ├── client.js
+│   │   ├── clientData.json
+│   │   ├── homepage.json
+│   │   ├── projectOne.json
+│   │   └── projectTwo.json
 │   ├── _includes/
 │   │   ├── components/
 │   │   ├── layouts/
@@ -247,11 +264,13 @@ It's also good to understand how it works when a user goes to a domain. If a use
 
 #### \_data/
 
-This directory contains data files that are accessible within any template throughout the project. Out of the box, the kit only contains a `client.js` file, which holds some information you may wish to define for a client. It's important to fill this file out with the correct information for your client, as many HTML meta tags, the sitemap, and robots.txt all use data from this file.
+This directory contains data files that are accessible within any template throughout the project. Out of the box, this includes `client.js` (for core site metadata) plus JSON files used for CMS-managed page content. It's important to fill out `client.js` with the correct information for your client, as many HTML meta tags, the sitemap, and robots.txt all use data from this file.
 
 Consider adding the client's contact details, address, and social media information to this file. Examples have been provided in the kit. This way, you can access the client's information from a single source of truth. If a client changes their email address, you can update it in the `client.js` file and have it reflect across the website without needing to search through multiple files or use Find and Replace.
 
 As an example, we have defined the client's email address under the `email` key. In the footer (`./src/_includes/sections/footer.html`), we can use `{{ client.email }}` to access this value and output "help@codestitch.app". The format for outputting the data is `{{ [FILENAME].[KEY] }}`. If we wanted to add another file for pricing information, we could create a file (`_data/pricing.json`), then use `{{ pricing.price }}` to render the price.
+
+When creating JSON data files for use in templates, use JavaScript-identifier-friendly filenames (for example, `projectOne.json` rather than `project-one.json`) so they map cleanly to global data variables.
 
 In Eleventy, this is known as "Global Data". You can read more about Global Data [here](https://www.11ty.dev/docs/data-global/), with more information about how this works in the context of the Data Cascade [here](https://www.11ty.dev/docs/data-cascade/).
 
@@ -291,13 +310,13 @@ Note the if-check in the `class` attribute of the anchor element. Here, we're ch
 
 #### admin/
 
-The `admin/` directory sets up [Decap CMS](https://decapcms.org/) to be used within the project. It's configured as a blog that a client can access by navigating to the `/admin/` path on the deployed site, where they can create, update, and delete blog posts whenever they want. This modifies the markdown files in the source code, which will trigger a rebuild in Netlify, incorporating the new blog data. After about one minute, the client can see the new blog post on the website.
+The `admin/` directory sets up [Decap CMS](https://decapcms.org/) to be used within the project. It is configured for `Blog`, `Reviews`, and `Site Content` editing. Clients can access it at the `/admin/` path on the deployed site to create and update content without editing source files manually. Content updates are committed through the CMS flow and trigger a rebuild in Netlify.
 
-Decap CMS has been chosen due to its open-source nature, good UX/DX, and stability. Very little training is required on the client's end to get it to work - the interface is clean and operates without trouble. It works through an `index.html` file in the `admin/`. This `index.html` file is processed as an Eleventy template, added to `/public/admin`, and the CMS is loaded when navigating to the `/admin` path. This kit uses DecapBridge for authentication as the Netlify Identity feature has been deprecated. Visit [Decapbridge Discord](<(https://discord.com/channels/1257728522361901219/1257728681380417600)>) and their [open-sources repos](https://github.com/decapbridge) for more information and support.
+Decap CMS has been chosen due to its open-source nature, good UX/DX, and stability. Very little training is required on the client's end to get it to work - the interface is clean and operates without trouble. It works through an `index.html` file in the `admin/`. This `index.html` file is processed as an Eleventy template, added to `/public/admin`, and the CMS is loaded when navigating to the `/admin` path. This kit uses DecapBridge for authentication as the Netlify Identity feature has been deprecated. Visit [DecapBridge Discord](https://discord.com/channels/1257728522361901219/1257728681380417600) and their [open-source repos](https://github.com/decapbridge) for more information and support.
 
-The CMS is configured through a `config.yml` file, as per the Decap documentation. If you wish to use the blog as-is, you shouldn't need to make any changes here. If you want to extend the kit and modify the CMS for your own needs, we recommend referring to the Decap documentation for guidance on how to do so.
+The CMS is configured through `config.yml`, as per the Decap documentation. If you plan to use the provided Blog/Reviews/Site Content structure, you should only need light field-label or hint edits. If you want to extend the kit and modify the CMS for your own needs, refer to the Decap documentation for collection and widget configuration guidance.
 
-Styling the Decap preview pane This template includes custom styles for the Decap CMS preview pane, so that blog posts in the admin dashboard look similar to the live site.
+Styling the Decap preview pane: this template includes custom styles for the Decap CMS preview pane, so that blog posts in the admin dashboard look similar to the live site.
 
 1. How it works:
 
@@ -415,6 +434,29 @@ Set up as an HTML file so we can use the domain in `_data/client.js` to automati
 ##### sitemap.html
 
 Similar to `robots.html`, a `.html` file is used to generate a `sitemap.xml` file. It uses all HTML files that have a "sitemap" tag applied, which should be all pages in `content/`.
+
+<a name="handoff-checklist"></a>
+
+## Handoff Checklist
+
+Run through this before handing the project to a client or another developer.
+
+1. Local QA
+    - Run `npm start` and confirm `/`, `/about`, `/project-one`, `/project-two`, `/reviews`, and `/blog` load.
+    - Open `/admin` locally and verify Blog, Reviews, and Site Content collections are available.
+2. Content sanity
+    - Confirm `src/_data/client.js` has real business details (name, domain, contact, address, socials).
+    - In CMS, create or edit one test entry in Blog and one value in Site Content, then verify frontend output.
+3. Build and deploy readiness
+    - Run `npm run build` and confirm no errors.
+    - Confirm `netlify.toml` settings match intended deploy behavior.
+4. DecapBridge production setup
+    - Replace the placeholder `backend` block in `src/admin/config.yml` with the DecapBridge dashboard snippet.
+    - Ensure `logo_url` and optional `site_url` in `src/admin/config.yml` match the new site.
+    - Invite client users from DecapBridge and verify they can authenticate.
+5. Data and template conventions
+    - Do not edit files in `public/`; always edit under `src/`.
+    - Keep `_data` filenames JavaScript-identifier friendly (for example, `projectOne.json`, not `project-one.json`).
 
 <a name="deployment"></a>
 

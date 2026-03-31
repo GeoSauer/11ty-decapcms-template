@@ -20,20 +20,62 @@ collections:
       create: true
       slug: "{{slug}}"
       fields:
-          - { label: "Title", name: "title", widget: "string" }
+          - {
+                label: "Title",
+                name: "title",
+                widget: "string",
+                maxLength: 80,
+                hint: "Blog post title (80 characters max)",
+            }
           - {
                 label: "URL Slug",
                 name: "url",
                 widget: "string",
                 hint: 'Specify where the page will be written to. If you use "Blog Post", the post will be accessible from "blog/blog-post"',
             }
-          - { label: "Description", name: "description", widget: "string" }
-          - { label: "Author", name: "author", widget: "string" }
+          - {
+                label: "Description",
+                name: "description",
+                widget: "text",
+                maxLength: 160,
+                hint: "Short summary used for previews/SEO (160 characters max)",
+            }
+          - {
+                label: "Author",
+                name: "author",
+                widget: "string",
+                maxLength: 50,
+                hint: "Author name (50 characters max)",
+            }
           - { label: "Date", name: "date", widget: "datetime" }
-          - { label: "Tags", name: "tags", widget: "list", default: ["post"] }
-          - { label: "Featured Image", name: "image", widget: "image" }
-          - { label: "Image Caption", name: "imageAlt", widget: "string" }
-          - { label: "Body", name: "body", widget: "markdown" }
+          - {
+                label: "Tags",
+                name: "tags",
+                widget: "list",
+                default: ["post"],
+                min: 1,
+                max: 6,
+                hint: "Add 1-6 tags to group related posts",
+            }
+          - {
+                label: "Featured Image",
+                name: "image",
+                widget: "image",
+                hint: "Upload a landscape image (ideally 1200x630px+) for previews",
+            }
+          - {
+                label: "Image Caption",
+                name: "imageAlt",
+                widget: "string",
+                maxLength: 120,
+                hint: "Describe the featured image for accessibility (120 characters max)",
+            }
+          - {
+                label: "Body",
+                name: "body",
+                widget: "markdown",
+                hint: "Main post content in Markdown format",
+            }
 
     - name: "reviews"
       label: "Reviews"
