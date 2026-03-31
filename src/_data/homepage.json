@@ -1,0 +1,31 @@
+{
+	"hero": {
+		"topper": "CodeStitch Presents",
+		"title": "The Intermediate Website Kit (SASS)",
+		"text": "Building faster websites, faster. Just clone, update your core details, swap out some sections, and away you go!",
+		"ctaText": "Get in Touch",
+		"ctaLink": "/contact/"
+	},
+	"services": [
+		{
+			"icon": "/assets/svgs/s1.svg",
+			"title": "Full Kitchen Remodel",
+			"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+		},
+		{
+			"icon": "/assets/svgs/s2.svg",
+			"title": "Exterior Repairs",
+			"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+		},
+		{
+			"icon": "/assets/svgs/s3.svg",
+			"title": "Utility Maintenance",
+			"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+		},
+		{
+			"icon": "/assets/svgs/s4.svg",
+			"title": "Design Consultation",
+			"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+		}
+	]
+}

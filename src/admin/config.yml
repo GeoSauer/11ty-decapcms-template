@@ -9,8 +9,8 @@ local_backend: true
 logo_url: https://codestitch.app/frontend/images/logo.png
 
 # Image folders
-media_folder: "src/assets/images/blog"
-public_folder: "/assets/images/blog"
+media_folder: "src/assets/images"
+public_folder: "/assets/images"
 
 # Decap CMS Collections
 collections:
@@ -34,3 +34,400 @@ collections:
           - { label: "Featured Image", name: "image", widget: "image" }
           - { label: "Image Caption", name: "imageAlt", widget: "string" }
           - { label: "Body", name: "body", widget: "markdown" }
+
+    - name: "reviews"
+      label: "Reviews"
+      folder: "src/content/reviews"
+      create: true
+      slug: "{{slug}}"
+      extension: "md"
+      format: "frontmatter"
+      fields:
+          - {
+                label: "Name",
+                name: "name",
+                widget: "string",
+                maxLength: 50,
+                hint: "Customer or reviewer name (50 characters max)",
+            }
+          - {
+                label: "Role",
+                name: "role",
+                widget: "string",
+                maxLength: 40,
+                hint: "Job title or role (40 characters max)",
+            }
+          - {
+                label: "Review Text",
+                name: "text",
+                widget: "text",
+                maxLength: 500,
+                hint: "Customer testimonial (500 characters max)",
+            }
+
+    - name: "site_content"
+      label: "Site Content"
+      format: "json"
+      files:
+          - label: "Homepage"
+            name: "homepage"
+            file: "src/_data/homepage.json"
+            fields:
+                - label: "Hero"
+                  name: "hero"
+                  widget: "object"
+                  fields:
+                      - {
+                            label: "Topper",
+                            name: "topper",
+                            widget: "string",
+                            maxLength: 30,
+                            hint: "Small intro text above title (30 characters max)",
+                        }
+                      - {
+                            label: "Title",
+                            name: "title",
+                            widget: "string",
+                            maxLength: 80,
+                            hint: "Main headline (80 characters max)",
+                        }
+                      - {
+                            label: "Text",
+                            name: "text",
+                            widget: "text",
+                            maxLength: 300,
+                            hint: "Description text (300 characters max)",
+                        }
+                      - {
+                            label: "CTA Text",
+                            name: "ctaText",
+                            widget: "string",
+                            maxLength: 30,
+                            hint: "Button text (30 characters max)",
+                        }
+                      - {
+                            label: "CTA Link",
+                            name: "ctaLink",
+                            widget: "string",
+                            hint: "Link URL - examples: /contact, https://example.com",
+                        }
+                - label: "Services"
+                  name: "services"
+                  widget: "list"
+                  min: 4
+                  max: 6
+                  summary: "{{fields.title}}"
+                  hint: "Add 4-6 services (currently 4 display on homepage)"
+                  fields:
+                      - {
+                            label: "Icon",
+                            name: "icon",
+                            widget: "image",
+                            hint: "Upload a PNG or SVG icon (ideally square, 200x200px+)",
+                        }
+                      - {
+                            label: "Title",
+                            name: "title",
+                            widget: "string",
+                            maxLength: 40,
+                            hint: "Service name (40 characters max)",
+                        }
+                      - {
+                            label: "Text",
+                            name: "text",
+                            widget: "text",
+                            maxLength: 200,
+                            hint: "Service description (200 characters max)",
+                        }
+
+          - label: "About Page"
+            name: "about"
+            file: "src/_data/about.json"
+            fields:
+                - {
+                      label: "Topper",
+                      name: "topper",
+                      widget: "string",
+                      maxLength: 30,
+                      hint: "Small intro text (30 characters max)",
+                  }
+                - {
+                      label: "Title",
+                      name: "title",
+                      widget: "string",
+                      maxLength: 80,
+                      hint: "Page headline (80 characters max)",
+                  }
+                - {
+                      label: "Text",
+                      name: "text",
+                      widget: "text",
+                      maxLength: 500,
+                      hint: "Main about description (500 characters max)",
+                  }
+                - {
+                      label: "Quote",
+                      name: "quote",
+                      widget: "text",
+                      maxLength: 300,
+                      hint: "Customer testimonial quote (300 characters max)",
+                  }
+                - {
+                      label: "Quote Name",
+                      name: "quoteName",
+                      widget: "string",
+                      maxLength: 50,
+                      hint: "Who said the quote (50 characters max)",
+                  }
+                - {
+                      label: "Quote Role",
+                      name: "quoteRole",
+                      widget: "string",
+                      maxLength: 40,
+                      hint: "Their title or role (40 characters max)",
+                  }
+                - {
+                      label: "Button Text",
+                      name: "buttonText",
+                      widget: "string",
+                      maxLength: 30,
+                      hint: "CTA button text (30 characters max)",
+                  }
+                - {
+                      label: "Button Link",
+                      name: "buttonLink",
+                      widget: "string",
+                      hint: "Link URL - examples: /contact, https://example.com",
+                  }
+                - {
+                      label: "Primary Image",
+                      name: "primaryImage",
+                      widget: "image",
+                      hint: "Main about page image (ideally 1200x800px+)",
+                  }
+                - {
+                      label: "Secondary Image",
+                      name: "secondaryImage",
+                      widget: "image",
+                      hint: "Supporting image on right/bottom (ideally 600x600px+)",
+                  }
+
+          - label: "Project One"
+            name: "projectOne"
+            file: "src/_data/projectOne.json"
+            fields:
+                - {
+                      label: "Banner Title",
+                      name: "bannerTitle",
+                      widget: "string",
+                      maxLength: 50,
+                      hint: "Page header text (50 characters max)",
+                  }
+                - {
+                      label: "Topper",
+                      name: "topper",
+                      widget: "string",
+                      maxLength: 30,
+                      hint: "Small intro text (30 characters max)",
+                  }
+                - {
+                      label: "Title",
+                      name: "title",
+                      widget: "string",
+                      maxLength: 80,
+                      hint: "Project headline (80 characters max)",
+                  }
+                - {
+                      label: "CTA Text",
+                      name: "ctaText",
+                      widget: "string",
+                      maxLength: 30,
+                      hint: "Call-to-action button text (30 characters max)",
+                  }
+                - {
+                      label: "CTA Link",
+                      name: "ctaLink",
+                      widget: "string",
+                      hint: "Link URL - examples: /contact, https://example.com",
+                  }
+                - label: "Gallery Images"
+                  name: "images"
+                  widget: "list"
+                  min: 9
+                  max: 9
+                  summary: "Image: {{fields.alt}}"
+                  hint: "Add exactly 9 images (3x3 gallery grid)"
+                  fields:
+                      - {
+                            label: "Image",
+                            name: "src",
+                            widget: "image",
+                            hint: "Upload project photo",
+                        }
+                      - {
+                            label: "Alt Text",
+                            name: "alt",
+                            widget: "string",
+                            maxLength: 100,
+                            hint: "Describe the image (100 characters max)",
+                        }
+
+          - label: "Project Two"
+            name: "projectTwo"
+            file: "src/_data/projectTwo.json"
+            fields:
+                - {
+                      label: "Banner Title",
+                      name: "bannerTitle",
+                      widget: "string",
+                      maxLength: 50,
+                      hint: "Page header text (50 characters max)",
+                  }
+                - {
+                      label: "Topper",
+                      name: "topper",
+                      widget: "string",
+                      maxLength: 30,
+                      hint: "Small intro text (30 characters max)",
+                  }
+                - {
+                      label: "Title",
+                      name: "title",
+                      widget: "string",
+                      maxLength: 80,
+                      hint: "Project headline (80 characters max)",
+                  }
+                - {
+                      label: "CTA Text",
+                      name: "ctaText",
+                      widget: "string",
+                      maxLength: 30,
+                      hint: "Call-to-action button text (30 characters max)",
+                  }
+                - {
+                      label: "CTA Link",
+                      name: "ctaLink",
+                      widget: "string",
+                      hint: "Link URL - examples: /contact, https://example.com",
+                  }
+                - label: "Gallery Images"
+                  name: "images"
+                  widget: "list"
+                  min: 9
+                  max: 9
+                  summary: "Image: {{fields.alt}}"
+                  hint: "Add exactly 9 images (3x3 gallery grid)"
+                  fields:
+                      - {
+                            label: "Image",
+                            name: "src",
+                            widget: "image",
+                            hint: "Upload project photo",
+                        }
+                      - {
+                            label: "Alt Text",
+                            name: "alt",
+                            widget: "string",
+                            maxLength: 100,
+                            hint: "Describe the image (100 characters max)",
+                        }
+
+          - label: "Business Info"
+            name: "client"
+            file: "src/_data/clientData.json"
+            fields:
+                - {
+                      label: "Business Name",
+                      name: "name",
+                      widget: "string",
+                      maxLength: 100,
+                      hint: "Your company name",
+                  }
+                - {
+                      label: "Email",
+                      name: "email",
+                      widget: "string",
+                      hint: "Contact email address (e.g., hello@company.com)",
+                  }
+                - {
+                      label: "Phone (tel format)",
+                      name: "phoneForTel",
+                      widget: "string",
+                      hint: "For clickable links - format: +1(555) 779-4407",
+                  }
+                - {
+                      label: "Phone (display format)",
+                      name: "phoneFormatted",
+                      widget: "string",
+                      hint: "As displayed on website - format: (555) 779-4407",
+                  }
+                - label: "Address"
+                  name: "address"
+                  widget: "object"
+                  fields:
+                      - {
+                            label: "Address Line 1",
+                            name: "lineOne",
+                            widget: "string",
+                            hint: "Street address",
+                        }
+                      - {
+                            label: "Address Line 2",
+                            name: "lineTwo",
+                            widget: "string",
+                            required: false,
+                            hint: "Apt, Suite, etc. (optional)",
+                        }
+                      - {
+                            label: "City",
+                            name: "city",
+                            widget: "string",
+                            hint: "City name",
+                        }
+                      - {
+                            label: "State",
+                            name: "state",
+                            widget: "string",
+                            maxLength: 2,
+                            hint: "State abbreviation (e.g., CO)",
+                        }
+                      - {
+                            label: "ZIP",
+                            name: "zip",
+                            widget: "string",
+                            hint: "Zip code (e.g., 80206)",
+                        }
+                      - {
+                            label: "Country",
+                            name: "country",
+                            widget: "string",
+                            hint: "Country name",
+                        }
+                      - {
+                            label: "Map Link",
+                            name: "mapLink",
+                            widget: "string",
+                            hint: "Google Maps URL (https://maps.google.com/...)",
+                        }
+                - label: "Social Links"
+                  name: "socials"
+                  widget: "object"
+                  fields:
+                      - {
+                            label: "Facebook",
+                            name: "facebook",
+                            widget: "string",
+                            hint: "Full URL: https://www.facebook.com/yourpage",
+                        }
+                      - {
+                            label: "Instagram",
+                            name: "instagram",
+                            widget: "string",
+                            hint: "Full URL: https://www.instagram.com/yourprofile",
+                        }
+                - {
+                      label: "Domain",
+                      name: "domain",
+                      widget: "string",
+                      hint: "Website domain (e.g., example.com)",
+                  }
