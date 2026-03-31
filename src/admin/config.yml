@@ -164,8 +164,8 @@ collections:
                       - {
                             label: "Icon",
                             name: "icon",
-                            widget: "image",
-                            hint: "Upload a PNG or SVG icon (ideally square, 200x200px+)",
+                            widget: "string",
+                            hint: "Asset path to icon (e.g., /assets/svgs/s1.svg or /assets/images/icon.png)",
                         }
                       - {
                             label: "Title",

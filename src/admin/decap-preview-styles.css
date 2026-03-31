@@ -1,11 +1,11 @@
-/* This style sheet is used to style the blog preview in the Decap CMS admin panel. */
-/* THe classses should match the elements created in the Decap CMS preview pane script in admin.astro */
+/* This style sheet is used to style the content previews in the Decap CMS admin panel. */
+/* Colors and fonts are synced with src/assets/sass/root.scss for accurate representation. */
 
 :root {
-	--primary: hsl(80, 90%, 55%);
-	--primaryLight: hsl(80, 60%, 40%);
-	--secondary: #001f3f;
-	--secondaryLight: #001f3f;
+	--primary: #ff6a3e;
+	--primaryLight: #ffba43;
+	--secondary: #ffba43;
+	--secondaryLight: #ffba43;
 	--headerColor: #1a1a1a;
 	--bodyTextColor: #4e4b66;
 	--bodyTextColorWhite: #fafbfc;
@@ -113,7 +113,23 @@
 	text-decoration-color: var(--primary);
 }
 
-.frame-content .blog .markdown *:not(pre *, .admonition *, details *, blockquote *, span, a, h1, h2, h3, h4, h5, h6) {
+.frame-content
+	.blog
+	.markdown
+	*:not(
+		pre *,
+		.admonition *,
+		details *,
+		blockquote *,
+		span,
+		a,
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6
+	) {
 	color: var(--bodyTextColor);
 }
 
@@ -124,4 +140,140 @@
 	color: #e1e4e8 !important;
 	overflow-x: auto;
 	border-radius: 0.5em;
+}
+
+/* Homepage, About, Projects previews */
+.frame-content .page-preview {
+	padding: 2rem;
+	max-width: 48rem;
+	margin-inline: auto;
+}
+
+.frame-content .page-preview .topper {
+	font-size: var(--topperFontSize);
+	line-height: 1.2em;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	font-weight: 700;
+	color: var(--primary);
+	margin-bottom: 0.25rem;
+}
+
+.frame-content .page-preview .title {
+	font-size: var(--headerFontSize);
+	font-weight: 900;
+	line-height: 1.2em;
+	color: var(--headerColor);
+	margin: 0.5rem 0 1rem 0;
+}
+
+.frame-content .page-preview .text {
+	color: var(--bodyTextColor);
+	line-height: 1.6;
+	margin-bottom: 1.5rem;
+}
+
+.frame-content .page-preview img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 0.5em;
+	margin: 1.5rem 0;
+}
+
+.frame-content .page-preview .quote-block {
+	border-left: 4px solid var(--primary);
+	padding-left: 1rem;
+	margin: 2rem 0;
+	font-style: italic;
+	color: var(--bodyTextColor);
+}
+
+.frame-content .page-preview .quote-attribution {
+	margin-top: 0.5rem;
+	font-weight: bold;
+	color: var(--headerColor);
+	font-size: 0.95rem;
+}
+
+.frame-content .page-preview .services-list {
+	display: grid;
+	gap: 1rem;
+	margin: 1.5rem 0;
+}
+
+.frame-content .page-preview .service-item {
+	padding: 1rem;
+	border-radius: 0.5em;
+	background-color: #f5f5f5;
+}
+
+.frame-content .page-preview .service-item .service-icon {
+	width: 3rem;
+	height: 3rem;
+	object-fit: contain;
+	margin: 0;
+	border-radius: 0;
+}
+
+.frame-content .page-preview .service-item .title {
+	margin: 0.5rem 0 0.25rem 0;
+	font-size: 1.2rem;
+}
+
+.frame-content .page-preview .service-item .text {
+	margin: 0;
+	font-size: 0.95rem;
+}
+
+.frame-content .page-preview .gallery-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1rem;
+	margin: 1.5rem 0;
+}
+
+.frame-content .page-preview .gallery-item {
+	aspect-ratio: 1;
+	border-radius: 0.5em;
+	overflow: hidden;
+	background-color: #e5e5e5;
+}
+
+.frame-content .page-preview .gallery-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	margin: 0;
+}
+
+.frame-content .page-preview .reviews-list {
+	display: grid;
+	gap: 1.5rem;
+	margin: 1.5rem 0;
+}
+
+.frame-content .page-preview .review-item {
+	padding: 1.5rem;
+	background-color: #f9f9f9;
+	border-radius: 0.5em;
+	border-left: 4px solid var(--primary);
+}
+
+.frame-content .page-preview .review-item .name {
+	font-weight: bold;
+	color: var(--headerColor);
+	margin: 0 0 0.25rem 0;
+	font-size: 0.95rem;
+}
+
+.frame-content .page-preview .review-item .role {
+	font-size: 0.85rem;
+	color: var(--bodyTextColor);
+	margin-bottom: 0.75rem;
+}
+
+.frame-content .page-preview .review-item .text {
+	margin: 0;
+	font-size: 0.95rem;
+	line-height: 1.5;
 }

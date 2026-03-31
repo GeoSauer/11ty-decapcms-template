@@ -1,68 +1,293 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script
+			crossorigin
+			src="https://unpkg.com/react@18/umd/react.production.min.js"
+		></script>
+		<script
+			crossorigin
+			src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+		></script>
+		<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+		<title>Content Manager</title>
+	</head>
 
-    <title>Content Manager</title>
-</head>
+	<body>
+		<script src="https://unpkg.com/decap-cms@3.0.0/dist/decap-cms.js"></script>
 
-<body>
-    <script src="https://unpkg.com/decap-cms@3.0.0/dist/decap-cms.js"></script>
+		<!-- Decap CMS preview pane script -->
+		<!-- Edit this script to customize the preview pane for your content.  -->
+		<!-- Documentation: https://decapcms.org/docs/customization/ -->
+		{% raw %}
+		<script type="text/babel">
+			// Helper to resolve asset paths: if already a full path, use it; otherwise use getAsset
+			const resolveAssetPath = (path, getAssetFn) => {
+				if (!path) return null;
+				if (typeof path === "string" && path.startsWith("/assets/")) {
+					return path; // Already a full path, use directly
+				}
+				return getAssetFn(path)?.toString();
+			};
 
-    <!-- Decap CMS preview pane script -->
-    <!-- Edit this script to customize the preview pane for your blog posts.  -->
-    <!-- Documentation: https://decapcms.org/docs/customization/ -->
-    <script type="text/babel">
-        const BlogPreview = createClass({
-            render: function () {
-                // Get all the props from the collection
-                const data = this.props.entry.get("data").toJS();
-                const { title, author, date: rawDate, image } = data;
-                const date = typeof rawDate === "string" ? new Date(rawDate) : rawDate;
-                let formattedDate = "";
-                if (date) {
-                    formattedDate = Intl.DateTimeFormat("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric"
-                    }).format(date);
-                }
+			const BlogPreview = createClass({
+				render: function () {
+					// Get all the props from the collection
+					const data = this.props.entry.get("data").toJS();
+					const { title, author, date: rawDate, image } = data;
+					const date =
+						typeof rawDate === "string"
+							? new Date(rawDate)
+							: rawDate;
+					let formattedDate = "";
+					if (date) {
+						formattedDate = Intl.DateTimeFormat("en-US", {
+							month: "long",
+							day: "numeric",
+							year: "numeric",
+						}).format(date);
+					}
 
-                const cover = this.props.getAsset(image);
+					const cover = resolveAssetPath(image, this.props.getAsset);
 
-                // Create elements for the preview pane in JSX, to be processed by Babel
-                return (
-                    <div className="blog">
-                        <h1 className="title">{title}</h1>
+					// Create elements for the preview pane in JSX, to be processed by Babel
+					return (
+						<div className="blog">
+							<h1 className="title">{title}</h1>
 
-                        <div className="metadata">
-                            <span className="author">{author}</span>
-                            <span className="dot"></span>
-                            <span className="date">{formattedDate}</span>
-                        </div>
+							<div className="metadata">
+								<span className="author">{author}</span>
+								<span className="dot"></span>
+								<span className="date">{formattedDate}</span>
+							</div>
 
-                        <img src={cover?.toString()} className="cover" alt="Cover" />
+							<img
+								src={cover?.toString()}
+								className="cover"
+								alt="Cover"
+							/>
 
-                        <hr className="divider" />
+							<hr className="divider" />
 
-                        <div className="markdown">
-                            {this.props.widgetFor("body")}
-                        </div>
-                    </div>
-                );
-            }
-        });
+							<div className="markdown">
+								{this.props.widgetFor("body")}
+							</div>
+						</div>
+					);
+				},
+			});
 
-        // Register the elements and styles for the "blog" collection
-        CMS.registerPreviewTemplate("blog", BlogPreview);
-        CMS.registerPreviewStyle("/admin/decap-preview-styles.css");
-    </script>
-</body>
+			const HomepagePreview = createClass({
+				render: function () {
+					const data = this.props.entry.get("data").toJS();
+					const { hero, services } = data;
 
+					return (
+						<div className="page-preview">
+							{hero && (
+								<div>
+									{hero.topper && (
+										<div className="topper">
+											{hero.topper}
+										</div>
+									)}
+									{hero.title && (
+										<h1 className="title">{hero.title}</h1>
+									)}
+									{hero.text && (
+										<p className="text">{hero.text}</p>
+									)}
+								</div>
+							)}
+							{services && services.length > 0 && (
+								<div>
+									<h2
+										style={{
+											fontSize: "1.5rem",
+											marginTop: "2rem",
+											color: "#1a1a1a",
+										}}
+									>
+										Services
+									</h2>
+									<div className="services-list">
+										{services.map((service, idx) => (
+											<div
+												key={idx}
+												className="service-item"
+											>
+												{service.icon && (
+													<img
+														className="service-icon"
+														src={resolveAssetPath(
+															service.icon,
+															this.props.getAsset,
+														)}
+														alt={
+															service.title ||
+															"Service icon"
+														}
+													/>
+												)}
+												{service.title && (
+													<h3 className="title">
+														{service.title}
+													</h3>
+												)}
+												{service.text && (
+													<p className="text">
+														{service.text}
+													</p>
+												)}
+											</div>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
+					);
+				},
+			});
+
+			const AboutPreview = createClass({
+				render: function () {
+					const data = this.props.entry.get("data").toJS();
+					const {
+						topper,
+						title,
+						text,
+						quote,
+						quoteName,
+						quoteRole,
+						primaryImage,
+					} = data;
+					const image = resolveAssetPath(
+						primaryImage,
+						this.props.getAsset,
+					);
+
+					return (
+						<div className="page-preview">
+							{topper && <div className="topper">{topper}</div>}
+							{title && <h1 className="title">{title}</h1>}
+							{text && <p className="text">{text}</p>}
+							{image && (
+								<img src={image?.toString()} alt="About" />
+							)}
+							{quote && (
+								<div className="quote-block">
+									<p>"{quote}"</p>
+									{quoteName && (
+										<div className="quote-attribution">
+											{quoteName}{" "}
+											{quoteRole && `- ${quoteRole}`}
+										</div>
+									)}
+								</div>
+							)}
+						</div>
+					);
+				},
+			});
+
+			const ProjectPreview = createClass({
+				render: function () {
+					const data = this.props.entry.get("data").toJS();
+					const { topper, title, text, images } = data;
+
+					return (
+						<div className="page-preview">
+							{topper && <div className="topper">{topper}</div>}
+							{title && <h1 className="title">{title}</h1>}
+							{text && <p className="text">{text}</p>}
+							{images && images.length > 0 && (
+								<div>
+									<h2
+										style={{
+											fontSize: "1.3rem",
+											marginTop: "2rem",
+											color: "#1a1a1a",
+										}}
+									>
+										Gallery ({images.length} images)
+									</h2>
+									<div className="gallery-grid">
+										{images.slice(0, 9).map((img, idx) => (
+											<div
+												key={idx}
+												className="gallery-item"
+											>
+												<img
+													src={resolveAssetPath(
+														img.src,
+														this.props.getAsset,
+													)}
+													alt={img.alt}
+												/>
+											</div>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
+					);
+				},
+			});
+
+			const ReviewsPreview = createClass({
+				render: function () {
+					const data = this.props.entry.get("data").toJS();
+					const { name, role, text } = data;
+
+					return (
+						<div className="page-preview">
+							<h1 className="title">Reviews</h1>
+							{text || name || role ? (
+								<div className="reviews-list">
+									<div className="review-item">
+										{text && (
+											<p
+												className="text"
+												style={{
+													margin: 0,
+													marginBottom: "0.75rem",
+													fontStyle: "italic",
+												}}
+											>
+												"{text}"
+											</p>
+										)}
+										{name && (
+											<div className="name">{name}</div>
+										)}
+										{role && (
+											<div className="role">{role}</div>
+										)}
+									</div>
+								</div>
+							) : (
+								<p className="text">
+									Start typing a review to see the preview.
+								</p>
+							)}
+						</div>
+					);
+				},
+			});
+
+			// Register the elements and styles for each collection
+			CMS.registerPreviewTemplate("blog", BlogPreview);
+			CMS.registerPreviewTemplate("homepage", HomepagePreview);
+			CMS.registerPreviewTemplate("about", AboutPreview);
+			CMS.registerPreviewTemplate("projectOne", ProjectPreview);
+			CMS.registerPreviewTemplate("projectTwo", ProjectPreview);
+			CMS.registerPreviewTemplate("reviews", ReviewsPreview);
+			CMS.registerPreviewStyle("/admin/decap-preview-styles.css");
+		</script>
+		{% endraw %}
+	</body>
 </html>
