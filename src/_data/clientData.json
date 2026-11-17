@@ -16,5 +16,6 @@
 		"facebook": "https://www.facebook.com/",
 		"instagram": "https://www.instagram.com/"
 	},
-	"domain": "https://www.example.com"
+	"domain": "https://www.example.com",
+	"socialImage": "/assets/favicons/web-app-manifest-512x512.png"
 }

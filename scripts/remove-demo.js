@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
+const { preflightBackups } = require("./utils/backup");
 
 const destinationDir = path.join(process.cwd(), "scripts", "deleted");
 
@@ -23,9 +24,7 @@ function moveItem(src, dest) {
 		return false;
 	}
 	ensureDir(path.dirname(dest));
-	if (fs.existsSync(dest)) {
-		fs.rmSync(dest, { recursive: true, force: true });
-	}
+	if (fs.existsSync(dest)) throw new Error(`Backup already exists: ${dest}`);
 	fs.renameSync(fullSrc, dest);
 	console.log(`Moved ${src} → ${path.relative(process.cwd(), dest)}`);
 	return true;
@@ -327,6 +326,16 @@ async function main() {
 		process.exit(0);
 	}
 
+	const backupPairs = [
+		...["about.html", "contact.html", "reviews.html", "project-one.html", "project-two.html"].map((file) => [`src/content/pages/${file}`, `pages-demo/${file}`]),
+		...["about.scss", "contact.scss", "reviews.scss", "projects.scss"].map((file) => [`src/assets/sass/${file}`, `sass-demo/${file}`]),
+		...["landing.jpg", "construction.jpg", "portfolio", "gallery"].map((file) => [`src/assets/images/${file}`, `images-demo/${file}`]),
+		...["quote.svg", "s1.svg", "s2.svg", "s3.svg", "s4.svg", "stars.svg"].map((file) => [`src/assets/svgs/${file}`, `svgs-demo/${file}`]),
+		["src/_includes/sections/cta.html", "sections-demo/cta.html"],
+		["src/index.html", "index.html"],
+	].map(([source, dest]) => [resolvePath(source), path.join(destinationDir, dest)]);
+	preflightBackups(backupPairs);
+
 	// Create destination directory
 	ensureDir(destinationDir);
 
@@ -336,6 +345,7 @@ async function main() {
 	moveDemoImages();
 	moveDemoSvgs();
 	moveDemoSections();
+	moveItem("src/index.html", path.join(destinationDir, "index.html"));
 
 	// Update files
 	simplifyIndex();
@@ -353,4 +363,7 @@ async function main() {
 	console.log("- To remove Decap CMS/blog: 'npm run remove-decap'\n");
 }
 
-main();
+main().catch((error) => {
+	console.error(`Demo removal failed: ${error.message}`);
+	process.exitCode = 1;
+});

@@ -279,6 +279,25 @@
 				},
 			});
 
+			const GeneratedPagePreview = createClass({
+				render: function () {
+					const { title, text } = this.props.entry.get("data").toJS();
+					return <div className="page-preview"><h1 className="title">{title}</h1><p className="text">{text}</p></div>;
+				},
+			});
+
+			const SharedContentPreview = createClass({
+				render: function () {
+					const { cta, footerText } = this.props.entry.get("data").toJS();
+					return (
+						<div className="page-preview">
+							{cta && <div><div className="topper">{cta.topper}</div><h1 className="title">{cta.title}</h1><p className="text">{cta.text}</p><p>{cta.buttonText} ({cta.buttonLink})</p></div>}
+							<h2>Footer</h2><p className="text">{footerText}</p>
+						</div>
+					);
+				},
+			});
+
 			// Register the elements and styles for each collection
 			CMS.registerPreviewTemplate("blog", BlogPreview);
 			CMS.registerPreviewTemplate("homepage", HomepagePreview);
@@ -286,6 +305,7 @@
 			CMS.registerPreviewTemplate("projectOne", ProjectPreview);
 			CMS.registerPreviewTemplate("projectTwo", ProjectPreview);
 			CMS.registerPreviewTemplate("reviews", ReviewsPreview);
+			CMS.registerPreviewTemplate("sharedContent", SharedContentPreview);
 			CMS.registerPreviewStyle("/admin/decap-preview-styles.css");
 		</script>
 		{% endraw %}

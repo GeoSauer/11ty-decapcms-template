@@ -73,7 +73,7 @@ _Knowledge requirements before using the kit_
 
 - HTML/CSS
 - Beginner-level JS
-- Familiarity with working in a NodeJS-powered project (handling dependencies with npm, source vs built files, etc)
+- Node.js 22 or newer and familiarity with npm and source vs built files
 - Familiarity with templating languages (this kit uses Nunjucks)
 
 <a name="good-to-knows"></a>
@@ -100,7 +100,7 @@ _Not required for light-medium kit usage, but helpful if you want to customise t
 3.  Clone the repository locally to your computer and open it in VS Code.
 4.  Run `npm install` to install all dependencies.
 5.  After the installation is complete, run `npm start` to start the development server.
-6.  Fill out the `./src/_data/client.js` file with the appropriate information for your client.
+6.  Fill out `./src/_data/clientData.json` with the appropriate information for your client, including the full production domain and a default social-sharing image. `client.js` exposes that data to templates.
 7.  Adjust the `:root` variables in `./src/assets/sass/root.scss`
 8.  Modify the website files (use `./src`, NOT `./public`) as needed. Use the template file in `content/pages/_template.txt` to get started, or modify the existing pages.
 9.  Deploy using your preferred hosting provider.
@@ -116,6 +116,12 @@ Use this quick sequence when starting a fresh client project:
 5. Re-open the related page in the browser and verify the content update.
 6. Run `npm run build` before first deploy to confirm production build output is clean.
 
+Before launch, run `npm run check:launch` for actionable checks for starter branding, sample content, domain, CMS setup and the demo contact form. This optional command fails while known placeholders remain; it does not block ordinary builds. It cannot verify delivery, credentials or every placeholder, so review the site manually too.
+
+**Contact form:** The demo form has no submission provider configured. Choose and configure a service appropriate for your host, then submit a real test and confirm delivery before launch. A successful build does not make the form operational.
+
+Set up the production Decap backend separately from the local CMS, test production authentication, replace the logo and favicon files, and update the app name in `src/assets/favicons/site.webmanifest`. Update `socialImage` in Business Info to a real image suitable for sharing; internal image paths are converted to absolute URLs and individual pages may override the default with front-matter `image`.
+
 <a name="customization-scripts"></a>
 
 ## Customization Scripts
@@ -129,10 +135,12 @@ Run `npm run remove-dark-mode` to remove all dark mode code.
 ### Remove Decap CMS
 
 Run `npm run remove-decap` to remove Decap CMS and optionally all blog content.
+Afterward run `npm install --package-lock-only` to synchronize the lockfile before using `npm ci`.
 
 ### Remove Demo Content
 
 Run `npm run remove-demo` to strip the template to its bare minimum.
+Removal scripts keep backups in `scripts/deleted/`. If a backup already exists, they stop instead of overwriting it; move or restore the existing backup before retrying.
 
 ### Create New Page
 
@@ -148,10 +156,23 @@ For each name provided, the script will:
 
 - Create `src/content/pages/{slug}.html` pre-filled with `_template.txt`
 - Create `src/assets/sass/{slug}.scss` ready for your page-specific styles
+- Create `src/_data/{camelName}.json` and connect it to the starter page
+- Add links to the existing header and footer and, when CMS is installed, add editable fields and a preview
 - Set the page title to `Page Name | Client | City, State` automatically using data from `_data/client.js`
 - Set the permalink to `/{slug}/`
 
-If a page with the same slug already exists, it will be skipped with a message rather than overwritten.
+If a generated file or data identifier already exists, the command fails without overwriting it. Page names must begin with a letter. Generated pages are tracked in `scripts/generated-pages.json`; retain the generated markers in their files and navigation so removal remains safe.
+
+### Remove a generated page
+
+Run `npm run remove-page -- "Page Name"` to remove a page created by the script and its managed navigation and CMS entries. Comma-separated names are supported. Existing demo pages and other manually created pages are not removed by this command.
+
+### Validation and Markdown
+
+- `npm test` runs focused tests, removes generated `public/`, rebuilds it and checks internal routes/assets. CI runs the same checks on a fresh checkout without relying on third-party websites. Use `npm run clean-build` to remove and rebuild `public/` separately.
+- `npm run test:links` checks external URLs in the built site. It requires network access; 401, 403 and 429 are treated as reachable. Set `EXTERNAL_LINK_CHECK_SKIP` to comma-separated URL substrings for known exceptions.
+- Use `{{ content | markdown | safe }}` to render Markdown from trusted content. Raw HTML is escaped by the Markdown parser; validate links and content before publishing.
+- Reduced-motion preferences are respected by the shared stylesheet.
 
 <a name="explanation-of-file-structure"></a>
 
@@ -165,7 +186,12 @@ This documentation will explain all the files and directories in the starter kit
 │   ├── utils/
 │   ├── remove-dark-mode.js
 │   ├── remove-decap.js
-│   └── remove-demo.js
+│   ├── remove-demo.js
+│   ├── create-page.js
+│   ├── remove-page.js
+│   ├── check-launch.js
+│   ├── validate-site.js
+│   └── validate-external-links.js
 ├── src/
 │   ├── _data/
 │   │   ├── about.json
@@ -173,7 +199,8 @@ This documentation will explain all the files and directories in the starter kit
 │   │   ├── clientData.json
 │   │   ├── homepage.json
 │   │   ├── projectOne.json
-│   │   └── projectTwo.json
+│   │   ├── projectTwo.json
+│   │   └── sharedContent.json
 │   ├── _includes/
 │   │   ├── components/
 │   │   ├── layouts/
@@ -264,9 +291,9 @@ It's also good to understand how it works when a user goes to a domain. If a use
 
 #### \_data/
 
-This directory contains data files that are accessible within any template throughout the project. Out of the box, this includes `client.js` (for core site metadata) plus JSON files used for CMS-managed page content. It's important to fill out `client.js` with the correct information for your client, as many HTML meta tags, the sitemap, and robots.txt all use data from this file.
+This directory contains data files that are accessible within any template throughout the project. `clientData.json` contains core business metadata and `client.js` exposes it as `client`; other JSON files provide CMS-managed page content. Fill out `clientData.json` for your client, as HTML metadata, the sitemap, and robots.txt use its values.
 
-Consider adding the client's contact details, address, and social media information to this file. Examples have been provided in the kit. This way, you can access the client's information from a single source of truth. If a client changes their email address, you can update it in the `client.js` file and have it reflect across the website without needing to search through multiple files or use Find and Replace.
+Replace the example contact details, address, and social media information in `clientData.json`. If a client changes their email address, update it there and it will be reflected across the website.
 
 As an example, we have defined the client's email address under the `email` key. In the footer (`./src/_includes/sections/footer.html`), we can use `{{ client.email }}` to access this value and output "help@codestitch.app". The format for outputting the data is `{{ [FILENAME].[KEY] }}`. If we wanted to add another file for pricing information, we could create a file (`_data/pricing.json`), then use `{{ pricing.price }}` to render the price.
 
@@ -445,7 +472,7 @@ Run through this before handing the project to a client or another developer.
     - Run `npm start` and confirm `/`, `/about`, `/project-one`, `/project-two`, `/reviews`, and `/blog` load.
     - Open `/admin` locally and verify Blog, Reviews, and Site Content collections are available.
 2. Content sanity
-    - Confirm `src/_data/client.js` has real business details (name, domain, contact, address, socials).
+    - Confirm `src/_data/clientData.json` has real business details (name, domain, contact, address, socials).
     - In CMS, create or edit one test entry in Blog and one value in Site Content, then verify frontend output.
 3. Build and deploy readiness
     - Run `npm run build` and confirm no errors.

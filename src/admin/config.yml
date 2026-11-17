@@ -374,6 +374,21 @@ collections:
                             hint: "Describe the image (100 characters max)",
                         }
 
+          - label: "Shared Content"
+            name: "sharedContent"
+            file: "src/_data/sharedContent.json"
+            fields:
+                - label: "Call to Action"
+                  name: "cta"
+                  widget: "object"
+                  fields:
+                      - { label: "Topper", name: "topper", widget: "string", maxLength: 30, hint: "Small text above the title (30 characters max)" }
+                      - { label: "Title", name: "title", widget: "string", maxLength: 80, hint: "Call-to-action headline (80 characters max)" }
+                      - { label: "Text", name: "text", widget: "text", maxLength: 300, hint: "Call-to-action description (300 characters max)" }
+                      - { label: "Button Text", name: "buttonText", widget: "string", maxLength: 30, hint: "Button label (30 characters max)" }
+                      - { label: "Button Link", name: "buttonLink", widget: "string", hint: "A page path or full URL" }
+                - { label: "Footer Text", name: "footerText", widget: "text", maxLength: 300, hint: "Short footer description (300 characters max)" }
+
           - label: "Business Info"
             name: "client"
             file: "src/_data/clientData.json"
@@ -471,5 +486,11 @@ collections:
                       label: "Domain",
                       name: "domain",
                       widget: "string",
-                      hint: "Website domain (e.g., example.com)",
+                      hint: "Full website URL, including https://",
+                  }
+                - {
+                      label: "Default Social Image",
+                      name: "socialImage",
+                      widget: "image",
+                      hint: "Default image for social sharing; use a landscape image.",
                   }

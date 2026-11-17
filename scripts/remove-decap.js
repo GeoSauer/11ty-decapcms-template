@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 const { collectFiles } = require("./utils/collect-files.js");
+const { preflightBackups } = require("./utils/backup");
 
 const destinationDir = path.join(process.cwd(), "scripts", "deleted");
 
@@ -24,10 +25,7 @@ function moveItem(src, dest) {
 		return false;
 	}
 	ensureDir(path.dirname(dest));
-	// Remove destination if it already exists
-	if (fs.existsSync(dest)) {
-		fs.rmSync(dest, { recursive: true, force: true });
-	}
+	if (fs.existsSync(dest)) throw new Error(`Backup already exists: ${dest}`);
 	fs.renameSync(fullSrc, dest);
 	console.log(`Moved ${src} → ${path.relative(process.cwd(), dest)}`);
 	return true;
@@ -167,8 +165,7 @@ function removeBlog() {
 	// Move blog images
 	moveItem("src/assets/images/blog", path.join(destinationDir, "images-blog"));
 
-	// Move cabinets.jpg (used as blog banner in post.html and blog.html)
-	moveItem("src/assets/images/cabinets.jpg", path.join(destinationDir, "cabinets.jpg"));
+	// Keep cabinets.jpg: the shared CTA and other pages also use it.
 
 	// Update header – remove blog <li> nav link
 	updateFile("src/_includes/sections/header.html", [
@@ -245,6 +242,18 @@ async function main() {
 
 	const removeBlogContent = await ask("Do you also want to remove all blog-related content? (y/n): ");
 
+	const pairs = [["src/admin", "admin"]];
+	if (removeBlogContent) pairs.push(
+		["src/content/blog", "blog"],
+		["src/content/pages/blog.html", "blog-page.html"],
+		["src/_includes/layouts/post.html", "post-layout.html"],
+		["src/_includes/components/featured-posts.html", "featured-posts.html"],
+		["src/_includes/components/post-schema.html", "post-schema.html"],
+		["src/assets/sass/blog.scss", "blog.scss"],
+		["src/assets/images/blog", "images-blog"],
+	);
+	preflightBackups(pairs.map(([source, dest]) => [resolvePath(source), path.join(destinationDir, dest)]));
+
 	// Create destination directory
 	ensureDir(destinationDir);
 
@@ -276,6 +285,7 @@ async function main() {
 	}
 
 	console.log("Next steps:");
+	console.log("- Run npm install --package-lock-only to synchronize package-lock.json after removing Decap.");
 	if (removeBlogContent) {
 		console.log("1. Run your build to ensure everything works");
 		console.log("2. All removed files are in scripts/deleted/ if you need to restore them\n");
@@ -286,4 +296,7 @@ async function main() {
 	}
 }
 
-main();
+main().catch((error) => {
+	console.error(`Decap removal failed: ${error.message}`);
+	process.exitCode = 1;
+});

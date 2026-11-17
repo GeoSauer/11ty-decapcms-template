@@ -1,0 +1,10 @@
+{
+	"cta": {
+		"topper": "Contact Us",
+		"title": "Get It Done With Us Today",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis at sit pellentesque molestie.  Diam, adipiscing ultrices eu turpis gravida.",
+		"buttonText": "Get A Free Quote",
+		"buttonLink": "/contact/"
+	},
+	"footerText": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi elementum tincidunt vitae velit dolor cras tellus nisl habitant. Consectetur pellentesque dignissim sed amet."
+}
