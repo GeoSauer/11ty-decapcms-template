@@ -103,6 +103,32 @@ test("pages can be created and removed after CMS removal", (t) => {
 	assert.equal(execute(dir, "remove-page.js", ["Our Team"]).status, 0);
 });
 
+test("page wizards create and remove pages with a confirmation step", async (t) => {
+	const dir = pageFixture(t);
+	const created = await interactive(dir, "create-page.js", [
+		["Page name(s), separated by commas:", "Our Team"],
+		["Create these pages? (y/N):", "y"],
+	]);
+	assert.equal(created.status, 0, created.output);
+	assert.match(created.output, /Our Team \(\/our-team\/\)/);
+	assert.equal(fs.existsSync(path.join(dir, "src/content/pages/our-team.html")), true);
+
+	const cancelled = await interactive(dir, "remove-page.js", [
+		["Choose page numbers or names", "1"],
+		["Remove these pages? (y/N):", "n"],
+	]);
+	assert.equal(cancelled.status, 0, cancelled.output);
+	assert.match(cancelled.output, /Page removal cancelled/);
+	assert.equal(fs.existsSync(path.join(dir, "src/content/pages/our-team.html")), true);
+
+	const removed = await interactive(dir, "remove-page.js", [
+		["Choose page numbers or names", "1"],
+		["Remove these pages? (y/N):", "y"],
+	]);
+	assert.equal(removed.status, 0, removed.output);
+	assert.equal(fs.existsSync(path.join(dir, "src/content/pages/our-team.html")), false);
+});
+
 test("Markdown escapes HTML and URL filter resolves internal and external images", () => {
 	const markdown = require("../../src/config/filters/markdown");
 	const absoluteUrl = require("../../src/config/filters/absoluteUrl");

@@ -1,7 +1,7 @@
 {
-	"name": "Intermediate-Website-Kit-SASS",
-	"version": "2.0.1",
-	"description": "The official CodeStitch Intermediate kit, featuring 11ty, Decap CMS and SASS - all set up for you! Perfect for websites of all sizes.",
+	"name": "11ty + DecapCMS Template",
+	"version": "1.0.0",
+	"description": "Based off of the official CodeStitch Intermediate kit.",
 	"main": "index.js",
 	"scripts": {
 		"watch:cms": "npx decap-server",
@@ -24,15 +24,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/CodeStitchOfficial/Intermediate-Website-Kit-SASS.git"
+		"url": "git+https://github.com/GeoSauer/11ty-decapcms-template.git"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/CodeStitchOfficial/Intermediate-Website-Kit-SASS/issues"
+		"url": "https://github.com/GeoSauer/11ty-decapcms-template/issues"
 	},
-	"homepage": "https://github.com/CodeStitchOfficial/Intermediate-Website-Kit-SASS#readme",
+	"homepage": "https://github.com/GeoSauer/11ty-decapcms-template#readme",
 	"dependencies": {
 		"@11ty/eleventy": "^3.1.2",
 		"@codestitchofficial/eleventy-plugin-minify": "^1.1.3",

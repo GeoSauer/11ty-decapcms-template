@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const readline = require("node:readline");
 const yaml = require("js-yaml");
 
 const root = process.cwd();
@@ -126,23 +127,134 @@ function remove(pages, registry, changes, deletions) {
 	}
 }
 
-function run(action) {
+function createPrompter() {
+	const rl = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout,
+	});
+	let pendingAnswer;
+
+	rl.on("close", () => {
+		pendingAnswer?.("");
+		pendingAnswer = null;
+	});
+
+	return {
+		ask(question) {
+			return new Promise((resolve) => {
+				pendingAnswer = resolve;
+				rl.question(question, (answer) => {
+					pendingAnswer = null;
+					resolve(answer);
+				});
+			});
+		},
+		close() {
+			rl.close();
+		},
+	};
+}
+
+function readRegistry() {
+	const registry = exists(registryPath) ? JSON.parse(read(registryPath)) : {};
+	if (!registry || typeof registry !== "object" || Array.isArray(registry)) {
+		throw new Error("Generated page registry is invalid; fix scripts/generated-pages.json before continuing.");
+	}
+	return registry;
+}
+
+function registeredPages(registry) {
+	return Object.keys(registry).sort();
+}
+
+function titleFromSlug(slug) {
+	return slug.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
+}
+
+function selectedPages(selection, available) {
+	const input = selection.trim();
+	if (!input) throw new Error("Select at least one generated page.");
+	if (input.toLowerCase() === "all") return available;
+
+	const selected = [];
+	for (const choice of input.split(",").map((item) => item.trim())) {
+		let slug;
+		if (/^\d+$/.test(choice)) {
+			slug = available[Number(choice) - 1];
+		} else {
+			const [page] = names(choice);
+			slug = page.slug;
+		}
+		if (!slug || !available.includes(slug)) {
+			throw new Error(`"${choice}" is not one of the registered generated pages.`);
+		}
+		if (!selected.includes(slug)) selected.push(slug);
+	}
+	return selected;
+}
+
+function perform(action, input) {
+	const pages = names(input);
+	const registry = readRegistry();
+	const changes = { [headerPath]: read(headerPath), [footerPath]: read(footerPath) };
+	if (exists(configPath)) changes[configPath] = read(configPath);
+	if (exists(adminPath)) changes[adminPath] = read(adminPath);
+	const deletions = [];
+	(action === "create" ? create : remove)(pages, registry, changes, deletions);
+	if (changes[configPath]) yaml.load(changes[configPath]);
+	changes[registryPath] = `${JSON.stringify(registry, null, 2)}\n`;
+	for (const [file, content] of Object.entries(changes)) fs.writeFileSync(resolve(file), content);
+	for (const file of deletions) fs.unlinkSync(resolve(file));
+	console.log(`${action === "create" ? "Created" : "Removed"}: ${pages.map((page) => page.slug).join(", ")}`);
+}
+
+async function runWizard(action, prompter) {
+	if (action === "create") {
+		console.log("Create a page scaffold with its data, styles, navigation, and CMS wiring.");
+		const input = await prompter.ask("Page name(s), separated by commas: ");
+		const pages = names(input);
+		console.log(`\nPages to create:\n${pages.map((page) => `- ${page.title} (/${page.slug}/)`).join("\n")}`);
+		if ((await prompter.ask("\nCreate these pages? (y/N): ")).trim().toLowerCase() !== "y") {
+			console.log("Page creation cancelled.");
+			return;
+		}
+		perform(action, input);
+		return;
+	}
+
+	const registry = readRegistry();
+	const available = registeredPages(registry);
+	if (available.length === 0) {
+		throw new Error('No generated pages are registered. Create one with `npm run create-page` first.');
+	}
+	console.log("Generated pages available to remove:");
+	available.forEach((slug, index) => console.log(`  ${index + 1}. ${titleFromSlug(slug)} (/${slug}/)`));
+	const selection = await prompter.ask('\nChoose page numbers or names, separated by commas (or "all"): ');
+	const slugs = selectedPages(selection, available);
+	console.log(`\nPages to remove:\n${slugs.map((slug) => `- ${titleFromSlug(slug)} (/${slug}/)`).join("\n")}`);
+	console.log("This removes their generated page, Sass, and data files, plus managed navigation and CMS entries.");
+	if ((await prompter.ask("\nRemove these pages? (y/N): ")).trim().toLowerCase() !== "y") {
+		console.log("Page removal cancelled.");
+		return;
+	}
+	perform(action, slugs.join(","));
+}
+
+async function run(action) {
+	const input = process.argv[2];
+	let prompter;
 	try {
-		const pages = names(process.argv[2]);
-		const registry = exists(registryPath) ? JSON.parse(read(registryPath)) : {};
-		const changes = { [headerPath]: read(headerPath), [footerPath]: read(footerPath) };
-		if (exists(configPath)) changes[configPath] = read(configPath);
-		if (exists(adminPath)) changes[adminPath] = read(adminPath);
-		const deletions = [];
-		(action === "create" ? create : remove)(pages, registry, changes, deletions);
-		if (changes[configPath]) yaml.load(changes[configPath]);
-		changes[registryPath] = `${JSON.stringify(registry, null, 2)}\n`;
-		for (const [file, content] of Object.entries(changes)) fs.writeFileSync(resolve(file), content);
-		for (const file of deletions) fs.unlinkSync(resolve(file));
-		console.log(`${action === "create" ? "Created" : "Removed"}: ${pages.map((page) => page.slug).join(", ")}`);
+		if (input) {
+			perform(action, input);
+			return;
+		}
+		prompter = createPrompter();
+		await runWizard(action, prompter);
 	} catch (error) {
 		console.error(`${action} page failed: ${error.message}`);
 		process.exitCode = 1;
+	} finally {
+		prompter?.close();
 	}
 }
 
